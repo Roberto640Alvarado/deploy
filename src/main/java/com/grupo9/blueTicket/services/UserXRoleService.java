@@ -15,5 +15,5 @@ public interface UserXRoleService {
 	
 	List<UserXRole> getAll();
 	
-	void removeRole(UUID userId, int roleId);
+	void removeRole(AssingRoleDTO info)throws Exception;
 }

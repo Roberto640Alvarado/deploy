@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,10 +65,16 @@ public class UserXRoleController {
 	    }
 	}
 	
-	@DeleteMapping("/delete")
-	public ResponseEntity<?> removeRole(@RequestParam UUID id_user, @RequestParam int id_role) {
+	@DeleteMapping("/remove")
+	public ResponseEntity<?> removeRole(@RequestBody AssingRoleDTO info, BindingResult validations) {
 	    try {
-	        userXRoleService.removeRole(id_user, id_role);
+	        boolean roleAssigned = userXRoleService.checkRoleAlreadyAssigned(info.getId_user(), info.getId_role());
+	        if (!roleAssigned) {
+	            return new ResponseEntity<>(
+	                    new MessageDTO("El usuario no tiene asignado ese rol"), HttpStatus.BAD_REQUEST);
+	        }
+
+	        userXRoleService.removeRole(info);
 	        return new ResponseEntity<>(
 	                new MessageDTO("Role removed"), HttpStatus.OK);
 	    } catch (Exception e) {
@@ -76,6 +83,7 @@ public class UserXRoleController {
 	                new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+
 	@GetMapping("/get-role")
     public ResponseEntity<?> myRole() {
         User user = userService.findUserAuthenticated();
