@@ -1,5 +1,6 @@
 package com.grupo9.blueTicket.services.implementations;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,12 @@ public class UserXRoleImpl implements UserXRoleService {
 
 	    // Eliminar la asignación del rol al usuario
 	    userXRoleRepository.deleteByUserIdAndRoleId(userId, roleId);
+	}
+
+	@Override
+	public List<UserXRole> getAll() {
+		// TODO Auto-generated method stub
+		return userXRoleRepository.findAll();
 	}
 
 }
