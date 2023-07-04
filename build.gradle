@@ -34,13 +34,6 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-jar{
-      enabled = false
-	manifest {
-		attributes 'Main-Class': 'com.grupo9.blueTicket.BlueTicketApplication'
-	}
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
