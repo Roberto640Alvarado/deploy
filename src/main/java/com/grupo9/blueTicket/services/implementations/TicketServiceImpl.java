@@ -74,5 +74,10 @@ public class TicketServiceImpl implements TicketService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public void createTicket(Ticket ticket) {
+	    ticketRepository.save(ticket);
+	}
+
    
 }

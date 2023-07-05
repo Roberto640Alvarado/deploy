@@ -38,14 +38,14 @@ public class PublicController {
 	
 	@Autowired
 	private CategoryService categoryService;
-	
-	
+
 	@GetMapping("/home")
 	public ResponseEntity<?> getAllEvents(@RequestParam(defaultValue = "1") int page,
-			                              @RequestParam(defaultValue = "6") int size,
-			                              @RequestParam(defaultValue = "") String title){
-		
-		long totalElements = eventService.count();
+	                                      @RequestParam(defaultValue = "6") int size,
+	                                      @RequestParam(defaultValue = "") String title,
+	                                      @RequestParam(defaultValue = "0") int category) {
+
+	    long totalElements = eventService.count();
 	    int totalPages = (int) Math.ceil((double) totalElements / size);
 
 	    List<Event> eventsMatch = new ArrayList<>();
@@ -55,16 +55,22 @@ public class PublicController {
 
 	        for (Event event : events.getContent()) {
 	            if (event.getTitle().toUpperCase().contains(title.toUpperCase())) {
-	                eventsMatch.add(event);
+	                // Verificar si la categoría coincide con la categoría especificada en la consulta
+	                if (category == 0 || event.getCategory().getId() == category) {
+	                    eventsMatch.add(event);
+	                }
 	            }
 	        }
 	    }
 
-	    List<Event> songsOnCurrentPage = eventsMatch.subList((page - 1) * size, Math.min(page * size, eventsMatch.size()));
-	    PageDTO<Event> songPageDTO = new PageDTO<>(songsOnCurrentPage, page, size, eventsMatch.size(), totalPages);
+	    List<Event> eventsOnCurrentPage = eventsMatch.subList((page - 1) * size, Math.min(page * size, eventsMatch.size()));
+	    PageDTO<Event> eventPageDTO = new PageDTO<>(eventsOnCurrentPage, page, size, eventsMatch.size(), totalPages);
 
-	    return new ResponseEntity<>(songPageDTO, HttpStatus.OK);
+	    return new ResponseEntity<>(eventPageDTO, HttpStatus.OK);
 	}
+
+
+	
 	@GetMapping("/get-user")
 	public ResponseEntity<?> getUserId(@RequestBody EmailDTO email){
 		List<User> user = userService.findAll();
@@ -86,6 +92,16 @@ public class PublicController {
 		Category category = categoryService.findOneById(id);
 		if(category != null) {
 			return ResponseEntity.ok(category);
+		}else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@GetMapping("/event/{id}")
+	public ResponseEntity<?> getEventById(@PathVariable(name = "id") UUID id){
+		Event event = eventService.findOneById(id);
+		if(event != null) {
+			return ResponseEntity.ok(event);
 		}else {
 			return ResponseEntity.notFound().build();
 		}

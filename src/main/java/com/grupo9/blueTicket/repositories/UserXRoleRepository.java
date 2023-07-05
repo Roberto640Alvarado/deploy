@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.grupo9.blueTicket.models.entities.Role;
+import com.grupo9.blueTicket.models.entities.User;
 import com.grupo9.blueTicket.models.entities.UserXRole;
 
 public interface UserXRoleRepository extends JpaRepository<UserXRole, UUID> {
@@ -11,5 +13,6 @@ public interface UserXRoleRepository extends JpaRepository<UserXRole, UUID> {
     boolean existsByUserIdAndRoleId(UUID userId, int roleId);
     
     void deleteByUserIdAndRoleId(UUID userId, int roleId);
+    UserXRole findByUserAndRole(User user, Role role);
 
 }

@@ -66,23 +66,24 @@ public class UserXRoleController {
 	}
 	
 	@DeleteMapping("/remove")
-	public ResponseEntity<?> removeRole(@RequestBody AssingRoleDTO info, BindingResult validations) {
+	public ResponseEntity<?> removeRole(@RequestParam UUID userId, @RequestParam int roleId) {
 	    try {
-	        boolean roleAssigned = userXRoleService.checkRoleAlreadyAssigned(info.getId_user(), info.getId_role());
+	        boolean roleAssigned = userXRoleService.checkRoleAlreadyAssigned(userId, roleId);
 	        if (!roleAssigned) {
 	            return new ResponseEntity<>(
-	                    new MessageDTO("El usuario no tiene asignado ese rol"), HttpStatus.BAD_REQUEST);
+	                new MessageDTO("El usuario no tiene asignado ese rol"), HttpStatus.BAD_REQUEST);
 	        }
 
-	        userXRoleService.removeRole(info);
+	        userXRoleService.removeRole(userId, roleId);
 	        return new ResponseEntity<>(
-	                new MessageDTO("Role removed"), HttpStatus.OK);
+	            new MessageDTO("Role removed"), HttpStatus.OK);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return new ResponseEntity<>(
-	                new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+	            new MessageDTO("Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+
 
 	@GetMapping("/get-role")
     public ResponseEntity<?> myRole() {

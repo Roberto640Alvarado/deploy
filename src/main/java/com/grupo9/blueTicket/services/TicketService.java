@@ -16,6 +16,7 @@ public interface TicketService {
 	void generateQR(String hash);
 
 	void generateToken(UUID ticketId);
+	void createTicket(Ticket ticket);
 	
 	void createTicket(SaveTicketDTO info);
 	

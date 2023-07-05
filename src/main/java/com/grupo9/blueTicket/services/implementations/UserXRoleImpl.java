@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.grupo9.blueTicket.models.dtos.AssingRoleDTO;
@@ -74,14 +75,15 @@ public class UserXRoleImpl implements UserXRoleService {
 
 	@Override
 	@Transactional(rollbackOn = Exception.class)
-	public void removeRole(AssingRoleDTO info) throws Exception {
-		UserXRole existingUserXRole = userXRoleRepository.findByUserIdAndRoleId(info.getId_user(), info.getId_role());
+	public void removeRole(UUID userId, int roleId) {
+	    User user = userRepository.findById(userId).orElse(null);
+	    Role role = roleRepository.findById(roleId).orElse(null);
 
-	    if (existingUserXRole != null) {
-	        userXRoleRepository.delete(existingUserXRole);
-	    } else {
-	        throw new RuntimeException("User role not found"); // Manejar el caso cuando no se encuentre la asignación de rol del usuario
+	    UserXRole userXRole = userXRoleRepository.findByUserAndRole(user, role);
+	    if (userXRole != null) {
+	        userXRoleRepository.delete(userXRole);
 	    }
 	}
+
 
 }

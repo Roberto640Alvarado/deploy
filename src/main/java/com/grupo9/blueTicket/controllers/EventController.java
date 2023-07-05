@@ -124,27 +124,31 @@ public class EventController {
 	}
 	@GetMapping("/home")
 	public ResponseEntity<?> getAllEvents(@RequestParam(defaultValue = "1") int page,
-                                          @RequestParam(defaultValue = "6") int size,
-                                          @RequestParam(defaultValue = "") String title){
-        long totalElements = eventService.count();
-        int totalPages = (int) Math.ceil((double) totalElements / size);
+	                                      @RequestParam(defaultValue = "6") int size,
+	                                      @RequestParam(defaultValue = "") String title,
+	                                      @RequestParam(defaultValue = "0") int category) {
 
-        List<Event> eventsMatch = new ArrayList<>();
+	    long totalElements = eventService.count();
+	    int totalPages = (int) Math.ceil((double) totalElements / size);
 
-           for (int i = 1; i <= totalPages; i++) {
-           Page<Event> events = eventService.findAll(PageRequest.of(i - 1, size));
+	    List<Event> eventsMatch = new ArrayList<>();
 
-           for (Event event : events.getContent()) {
-                if (event.getTitle().toUpperCase().contains(title.toUpperCase())) {
-                          eventsMatch.add(event);
-                             }
-                                }
-                                  }
+	    for (int i = 1; i <= totalPages; i++) {
+	        Page<Event> events = eventService.findAll(PageRequest.of(i - 1, size));
 
-        List<Event> songsOnCurrentPage = eventsMatch.subList((page - 1) * size, Math.min(page * size, eventsMatch.size()));
-        PageDTO<Event> songPageDTO = new PageDTO<>(songsOnCurrentPage, page, size, eventsMatch.size(), totalPages);
+	        for (Event event : events.getContent()) {
+	            if (event.getTitle().toUpperCase().contains(title.toUpperCase())) {
+	                // Verificar si la categoría coincide con la categoría especificada en la consulta
+	                if (category == 0 || event.getCategory().getId() == category) {
+	                    eventsMatch.add(event);
+	                }
+	            }
+	        }
+	    }
 
-        return new ResponseEntity<>(songPageDTO, HttpStatus.OK); 
+	    List<Event> eventsOnCurrentPage = eventsMatch.subList((page - 1) * size, Math.min(page * size, eventsMatch.size()));
+	    PageDTO<Event> eventPageDTO = new PageDTO<>(eventsOnCurrentPage, page, size, eventsMatch.size(), totalPages);
 
+	    return new ResponseEntity<>(eventPageDTO, HttpStatus.OK);
 	}
 }
